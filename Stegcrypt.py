@@ -1,72 +1,141 @@
 from PIL import Image
 import random
 import re
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-#The text we want hide in the image and it's length in 8-bit binary:
-message = input('Please enter the message:')
-channelDataLength = len(message)*8
+while True:
+    print('Please select an operation:' '\n' '1. Encode' '\n' '2. Decode' '\n' '0. Exit program')
+    option = input('Input:')
+    
+    if option == '1':
+        print('1')
+        originalText = input('Please enter the message:')
+        channelDataLength = len(originalText)*8
 
-#Converting the text in "message" to binary:
-text2binary = [format(ord(ch), '08b') for ch in message]
-text2binary = [list(map(int, x)) for x in text2binary]
-text2binary = sum(text2binary,[])
+        textBinary = [format(ord(ch), '08b') for ch in originalText]
+        textBinary = [list(map(int, x)) for x in textBinary]
+        textBinary = sum(textBinary,[])
+
+        print("Please select an image:")
+        Tk().withdraw()
+        image = askopenfilename()
+        carrierImage = Image.open(image)
+        size = width, height = carrierImage.size
+        pixelsInImage = width*height
+
+        def ChannelBinary(channel):
+            ChannelBinary = [format(pix, '08b') for pix in channel]
+            ChannelBinary = [list(map(int, n)) for n in ChannelBinary]
+            return ChannelBinary
+
+        RedChannel = list(carrierImage.getdata(band=0))
+        RedChannelBinary = ChannelBinary(RedChannel)
+        GreenChannel = list(carrierImage.getdata(band=1))
+        GreenChannelBinary = ChannelBinary(GreenChannel)
+        BlueChannel = list(carrierImage.getdata(band=2))
+        BlueChannelBinary = ChannelBinary(BlueChannel)
+
+        randomPixelList = random.sample(range(pixelsInImage), channelDataLength)
+        randomPixelList = [format(pixel ,'')for pixel in randomPixelList]
+        randomPixelList = [int(pixel)for pixel in randomPixelList]
+        randomChannelList = [random.choice('rgb') for _ in range(channelDataLength)]
+        combinedList = [[randomChannelList[n]] + [randomPixelList[n]] + [textBinary[n]] for n in range(channelDataLength)]
+
+        channels = {'r': RedChannelBinary, 'g': GreenChannelBinary, 'b': BlueChannelBinary}
+        for channel, pix, lsb in combinedList:
+            channels[channel][pix].pop(-1)
+            channels[channel][pix].append(lsb)
 
 
-#The image, a tuple of it's dimensions and the amount of it's pixels:
-carrier_image = Image.open('Jake.jpg')
-size = width, height = carrier_image.size
-pixelsInImage = width*height
 
-#Declaring a function that gets a band of color from the image and turns it to a list with the bands bianry:
-def ChannelBinary(channel):
-    ChannelBinary = [format(pix, '08b') for pix in channel]
-    ChannelBinary = [list(map(int, n)) for n in ChannelBinary]
-    return ChannelBinary
+        RedChannelBinary = [''.join(map(str, pix)) for pix in RedChannelBinary]
+        RedChannelBinary = [int(pix, 2) for pix in RedChannelBinary]
+        GreenChannelBinary = [''.join(map(str, pix)) for pix in GreenChannelBinary]
+        GreenChannelBinary = [int(pix, 2) for pix in GreenChannelBinary]
+        BlueChannelBinary = [''.join(map(str, pix)) for pix in BlueChannelBinary]
+        BlueChannelBinary = [int(pix, 2) for pix in BlueChannelBinary]
 
-#Retriving each band from the image and using the "ChannelBinary" function:
-RedChannel = list(carrier_image.getdata(band=0))
-RedChannelBinary = ChannelBinary(RedChannel)
-GreenChannel = list(carrier_image.getdata(band=1))
-GreenChannelBinary = ChannelBinary(GreenChannel)
-BlueChannel = list(carrier_image.getdata(band=2))
-BlueChannelBinary = ChannelBinary(BlueChannel)
 
-#Creating two sets of lists. The first is a random number generator that selects a pixel and the second selects a random letter for the sub-channel.Then their combind and used to append the bits from "text2binary" to the modified RGB bands:
-randomPixelList = random.sample(range(pixelsInImage), channelDataLength)
-randomPixelList = [format(pixel ,'')for pixel in randomPixelList]
-randomPixelList = [int(pixel)for pixel in randomPixelList]
-randomChannelList = [random.choice('rgb') for _ in range(channelDataLength)]
-combinedList = [[randomChannelList[n]] + [randomPixelList[n]] + [text2binary[n]] for n in range(channelDataLength)]
 
-#A dictionary of the sub-channels and the replacment of the original LSB from"jake.jpg" with the binary from "message":
-channels = {'r': RedChannelBinary, 'g': GreenChannelBinary, 'b': BlueChannelBinary}
-for channel, pix, lsb in combinedList:
-    channels[channel][pix].pop(-1)
-    channels[channel][pix].append(lsb)
+        newRedLayer = Image.new("RGB", size).convert('L')
+        newRedLayer.putdata(RedChannelBinary)
+        newGreenLayer = Image.new("RGB", size).convert('L')
+        newGreenLayer.putdata(GreenChannelBinary)
+        newBlueLayer = Image.new("RGB", size).convert('L')
+        newBlueLayer.putdata(BlueChannelBinary)
 
-#Converting the moddified band values of each band from binary to decimal:
-RedChannelBinary = [''.join(map(str, pix)) for pix in RedChannelBinary]
-RedChannelBinary = [int(pix, 2) for pix in RedChannelBinary]
-GreenChannelBinary = [''.join(map(str, pix)) for pix in GreenChannelBinary]
-GreenChannelBinary = [int(pix, 2) for pix in GreenChannelBinary]
-BlueChannelBinary = [''.join(map(str, pix)) for pix in BlueChannelBinary]
-BlueChannelBinary = [int(pix, 2) for pix in BlueChannelBinary]
+        encipheredImage = Image.merge("RGB", (newRedLayer, newGreenLayer, newBlueLayer))
+        encipheredImage.save('secrettest1.png')
+        del encipheredImage
 
-#Appending the the modified band lists to a new grayscale image to then merge them to an RGB image:
-newRedLayer = Image.new("RGB", size).convert('L')
-newRedLayer.putdata(RedChannelBinary)
-newGreenLayer = Image.new("RGB", size).convert('L')
-newGreenLayer.putdata(GreenChannelBinary)
-newBlueLayer = Image.new("RGB", size).convert('L')
-newBlueLayer.putdata(BlueChannelBinary)
+        randomPixelList = [str(pixel)for pixel in randomPixelList]
+        key = [[randomPixelList[(n)]] + [randomChannelList[n]] for n in range(channelDataLength)]
+        key = ''.join(''.join(n) for n in key)
+        print('Key:', key, '\n', sep="")
 
-#The new image:
-encipheredImage = Image.merge("RGB", (newRedLayer, newGreenLayer, newBlueLayer))
-encipheredImage.save('secrettest1.png')
-#del encipheredImage
 
-#A string used for decoding the encoded image:
-randomPixelList = [str(pixel)for pixel in randomPixelList]
-key = [[randomPixelList[(n)]] + [randomChannelList[n]] for n in range(channelDataLength)]
-key = ''.join(''.join(n) for n in key)
-print('Key:', key, '\n', sep="")
+
+    elif option == '2':
+        print('2')
+        key = input('Enter Key:')
+        print("Please select an image:")
+        Tk().withdraw()
+        image = askopenfilename()
+        encipheredImage = Image.open(image)
+
+        RedChannel = list(encipheredImage.getdata(band=0))
+        GreenChannel = list(encipheredImage.getdata(band=1))
+        BlueChannel = list(encipheredImage.getdata(band=2))
+
+        index = [match for match in re.findall('[^rgb]+?[rgb]', key)]
+
+        def coordinates(pixel): 
+            width = encipheredImage.width
+            coord = x, y = pixel%width, int(pixel/width)
+            return coord
+
+        lsb = []
+        for value in index:
+            if 'r' in value:
+                redPix = int(value[:-1])
+                redPixCoord = coordinates(redPix)
+                redPix = encipheredImage.getpixel(redPixCoord)[0]
+                redPixBinary = [format(redPix, '08b')]
+                redPixBinary = [list(map(str, n)) for n in redPixBinary]
+                redPixBinary = sum(redPixBinary, [])
+                lsb.append(redPixBinary[-1])
+                
+            elif 'g' in value:
+                greenPix = int(value[:-1])
+                greenPixCoord = coordinates(greenPix)
+                greenPix = encipheredImage.getpixel(greenPixCoord)[1]
+                greenPixBinary = [format(greenPix, '08b')]
+                greenPixBinary = [list(map(str, n)) for n in greenPixBinary]
+                greenPixBinary = sum(greenPixBinary, [])
+                lsb.append(greenPixBinary[-1])
+                
+            elif 'b' in value:
+                bluePix = int(value[:-1])
+                bluePixCoord = coordinates(bluePix)
+                bluePix = encipheredImage.getpixel(bluePixCoord)[2]
+                bluePixBinary = [format(bluePix, '08b')]
+                bluePixBinary = [list(map(str, n)) for n in bluePixBinary]
+                bluePixBinary = sum(bluePixBinary, [])
+                lsb.append(bluePixBinary[-1])
+
+        lsb = ''.join(lsb)
+        lsb = [lsb[i:i+8] for i in range(0, len(lsb), 8)]
+        HiddenMessage = [int(binary, 2) for binary in lsb]
+        HiddenMessage = [chr(value) for value in HiddenMessage]
+        HiddenMessage = ''.join(HiddenMessage)
+        print('Message:', HiddenMessage, sep="")
+
+
+
+    elif option == '0':
+        exit()
+        
+    else:
+        print('Invalid input, Please try again')
+        beggining()
