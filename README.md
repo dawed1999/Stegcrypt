@@ -22,20 +22,20 @@ The binary then gets added to another string that contains the channel of a pixe
 
 **During Encoding:**
 
-Using Pillow, we can take an image and crate 3 lists. Each containing the values(that are stord as decimals) of each channel(R, G, or B) in the image:
+Using Pillow, we can take an image and crate 3 lists. Each containing the values(that are stored as decimals) of each channel(R, G, or B) in the image:
 ```
 RedChannel = list(carrierImage.getdata(band=0))
 GreenChannel = list(carrierImage.getdata(band=1))
 BlueChannel = list(carrierImage.getdata(band=2))
 ```
-Then, convert them to binary as well as storing them as their own lists(We use the function"ChannelBinary" to achive this):
+Then, convert them to binary as well as store them as their own lists(We use the function"ChannelBinary" to achive this):
 ```
 def ChannelBinary(channel):
     ChannelBinary = [format(pix, '08b') for pix in channel]
     ChannelBinary = [list(map(int, n)) for n in ChannelBinary]
     return ChannelBinary
 ```
-We can now remove from each binary value the lsb(which is the last byte of a binary) and append one from the binary of the message. We use a dictionary to define red, green and blue channles as 'r', 'g', and 'b' accordingly as 'channels' and an if statment to append the lsb to the value's binary:
+We can now remove from each binary value the lsb(which is the last byte of a binary) and append one from the binary of the message. We use a dictionary to define red, green and blue channles as 'r', 'g', and 'b' accordingly as 'channels' and an `if` statment to append the lsb to the value's binary:
 ```
 channels = {'r': RedChannelBinary, 'g': GreenChannelBinary, 'b': BlueChannelBinary}
 for channel, pix, lsb in combinedList:
@@ -71,7 +71,7 @@ encipheredImage.save('secrettest1.png')
 
 **During Decoding:**
 
-We can now remove from each binary value the lsb(which is the last byte of a binary) and append one from the binary of the message.
+We can now remove from each binary value the lsb and append one from the binary of the message.
 
 (Since Pillow can only accept the position of a pixel in a tuple of(X,Y). The function'coordinates' is being used to turn the position of a pixel written as(1, 2, 3, ...) to (X,Y) notation using the pixel's value and the width of the image):
 ```
@@ -123,7 +123,7 @@ Using the string we created during the encoding, we can then decipher both the c
 We use a regular expression to break up the string into smaller pieces that are seperated by the channels and are written as 'r' for red, 'g' for green and 'b' for blue:
 `index = [match for match in re.findall('[^rgb]+?[rgb]', key)]`
 
-Then, using loops, we store the binary of the message from the lsb of each pixel in `lsb = []:
+Then, using loops, we store the binary of the message from the lsb of each pixel in `lsb = []`:
 ```
 lsb = []
 for value in index:
