@@ -10,11 +10,11 @@ The master branch will serve as the main page for the tool. From here you can se
 
 The branches are:
 
-`Python2`:A version of the tool for python 2.
+`Python2`:A version of the tool for Python 2.
 
-`Python3`:A version of the tool for python 3.
+`Python3`:A version of the tool for Python 3.
 
-`Database-Implementation`:A version of the tool where we can use a database(i.e.: MongoDB) to store hashes of the keys to then decypher the message in the image.
+`Database-Implementation`:A version of the tool that uses MongoDB to store hashes of the keys to then decypher the message in the image(Python 3).
 
 # Sources
 Pillow Package - https://pypi.org/project/Pillow/
