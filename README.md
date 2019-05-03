@@ -1,5 +1,5 @@
 # Stegcrypt
-An image steganography project where we can hide text in an image at a random channels of random pixels via the Least Siginifacnt Byte technique. Written in Python 3.7 using the Pillow package from PyPI.
+An image steganography project where we can hide text in an image at a random channels of random pixels via the Least Siginifacnt Byte technique. Written in Python 2.7 using the Pillow package from PyPI.
 
 # Information
 The project was an attempt to get myself started with coding, namely in Python, and to get acquainted with Steganography as a whole.
@@ -162,7 +162,7 @@ lsb = [lsb[i:i+8] for i in range(0, len(lsb), 8)]
 HiddenMessage = [int(binary, 2) for binary in lsb]
 HiddenMessage = [chr(value) for value in HiddenMessage]
 HiddenMessage = ''.join(HiddenMessage)
-print('Message:', HiddenMessage, sep="")
+print('Message:'+str(HiddenMessage))
 ```
 
 # Sources
