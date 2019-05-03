@@ -9,9 +9,12 @@ We take an image that we can use to hide the message inside of(Only images witho
 The master branch will serve as the main page for the tool. From here you can select the desired version/implementation by selecting the appropriate branch.
 
 The branches are:
-Python2:A version of the tool for python 2.
-Python3:A version of the tool for python 3.
-Database-Implementation:A version of the tool where we can use a database(i.e.: MongoDB) to store hashes of the keys to then decypher the message in the image.
+
+`Python2`:A version of the tool for python 2.
+
+`Python3`:A version of the tool for python 3.
+
+`Database-Implementation`:A version of the tool where we can use a database(i.e.: MongoDB) to store hashes of the keys to then decypher the message in the image.
 
 # Sources
 Pillow Package - https://pypi.org/project/Pillow/
