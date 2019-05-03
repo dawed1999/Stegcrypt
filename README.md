@@ -1,5 +1,5 @@
 # Stegcrypt
-An image steganography project where we can hide text in an image at a random channels of random pixels via the Least Siginifacnt Byte technique. Written in Python 3.7 using the Pillow package from PyPI and pymongo.
+An image steganography project where we can hide text in an image at a random channels of random pixels via the Least Siginifacnt Byte technique. Written in Python 3.7 using the Pillow and pymongo package from PyPI.
 
 # Information
 The project was an attempt to get myself started with coding, namely in Python, and to get acquainted with Steganography as a whole.
