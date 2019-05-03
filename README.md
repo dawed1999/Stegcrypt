@@ -7,6 +7,7 @@ We take an image that we can use to hide the message inside of(Only images witho
 
 # Main Page
 The master branch will serve as the main page for the tool. From here you can select the desired version/implementation by selecting the appropriate branch.
+
 The branches are:
 Python2:A version of the tool for python 2
 Python3:A version of the tool for python 3
