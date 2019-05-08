@@ -19,3 +19,6 @@ The branches are:
 # Sources
 Pillow Package - https://pypi.org/project/Pillow/
 pymongo - https://pypi.org/project/pymongo/
+
+# License
+Licensed under the term of MIT License. See attached file LICENSE.
